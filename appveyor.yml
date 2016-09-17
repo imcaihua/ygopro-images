@@ -1,0 +1,58 @@
+environment:
+  priv_key:
+      secure: ek1AH0N8/KF6VoildmkHnu4TY1yBZcptm20AesAOanRSSGLFqkXeRxL80mHSXtiVY8ggtQNsEQR4M69gCiw1OPVWz4OAN6Vg6id6kho9GqYxWCdADbmffSNPB5leksRGjGmkAF99WHiOIZrLRUb6Bia91Fe5+SngPhI01GDDUZA2urv9x50uBBhc+kvV0bv7J5TeXDGr7tfZ3J2aL/3tf/WPqBkqjWlGAj99HTWpkIiQgwaBHoyBvEFD0uHa1BdSmI7PySGabbx4/4zqyGkO38Ce7t/Ntu/dgedzVxlXYfuiXDI8caAPZSVsJ9E2S3VKesZJzHtV9KM/8Xq0RFPythdC/qTvd2e3IAZGudZpgbUHGAHLJnCzn189Zm+Qle8CbbVuPNDcf1B/G/XwEU2MsDXGkF/kFxdeqbHgjzneyns=
+  matrix:
+    - locale: zh-CN
+    #- locale: ja-JP
+    #- locale: zh-Classical
+version: '{build}'
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+cache:
+  - C:\ProgramData\chocolatey\bin
+  - C:\ProgramData\chocolatey\lib
+shallow_clone: true
+install:
+  # ssh key and submodules
+  - ps: $fileContent = "-----BEGIN EC PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END EC PRIVATE KEY-----`n"
+  - ps: Set-Content c:\users\appveyor\.ssh\id_ecdsa $fileContent
+
+  # environment and system dependency
+  - choco install imagemagick.tool
+  - refreshenv
+  - set PATH=C:\Ruby22\bin;%PATH%
+
+  # generator
+  - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
+  - mv ygopro-images-generator/* ./
+  - bundle install
+
+  # data
+  - mkdir ygopro-database
+  - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
+  - mkdir ygopro-images
+  - echo {} > records.json
+
+after_build:
+  - ruby generate.rb %locale%
+  - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
+  - mkdir ygopro-images\thumbnail
+  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 echo magick "ygopro-images-mse/{}.png" -colorspace RGB -write mpr:image +delete \( mpr:image -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" \) \( mpr:image -resize 44x64! -colorspace sRGB -write "ygopro-images/thumbnail/{}.jpg" \)'
+artifacts:
+  - path: ygopro-images
+    name: ygopro-images-zh-CN
+deploy:
+  release: latest
+  description: 'Automatic build'
+  provider: GitHub
+  auth_token:
+    secure: itZ9Z1dxEpfPJLdTs/PiY98pVZ3GCLNWfid7eAu7SL88Jl9AIrf/3rviKFEbsnoY # your encrypted token from GitHub
+  prerelease: true
+  force_update: true
+  on:
+    branch: master                 # release from master branch only
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
