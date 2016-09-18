@@ -39,7 +39,7 @@ after_build:
   - ruby generate.rb %locale%
   - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
   - mkdir ygopro-images\thumbnail
-  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB -write mpr:image +delete \( mpr:image -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" \) \( mpr:image -resize 44x64! -colorspace sRGB -write "ygopro-images/thumbnail/{}.jpg" \)'
+  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
 artifacts:
   - path: ygopro-images
     name: ygopro-images-zh-CN
