@@ -28,9 +28,7 @@ install:
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
   - mv ygopro-images-generator/* ./
   - bundle install
-  # install fonts http://superuser.com/a/788759
-  - ps: $fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)
-  - ps: dir magicseteditor/fonts/*.ttf | %{ $s.CopyHere($_.fullname) }
+  - robocopy magicseteditor\fonts %SystemRoot%\Fonts # install fonts
 
   # data
   - mkdir ygopro-database
