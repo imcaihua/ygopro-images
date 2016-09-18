@@ -28,7 +28,7 @@ install:
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
   - mv ygopro-images-generator/* ./
   - bundle install
-  - robocopy magicseteditor\fonts %SystemRoot%\Fonts # install fonts
+  - robocopy magicseteditor\fonts %SystemRoot%\Fonts || true # install fonts, ignore exit code http://ss64.com/nt/robocopy-exit.html
 
   # data
   - mkdir ygopro-database
