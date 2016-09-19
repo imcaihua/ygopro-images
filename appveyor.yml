@@ -36,7 +36,7 @@ install:
   # data
   - mkdir ygopro-database
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
-  - curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-%locale%.json || echo {} > records.json
+  - curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-%locale%.json || echo {} > records.json || true
 
 after_build:
   - ruby --external-encoding=utf-8 generate.rb %locale%
