@@ -40,6 +40,7 @@ install:
 
 after_build:
   - ruby --external-encoding=utf-8 generate.rb %locale%
+  - move records.json records-%locale%.json
   - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
   - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
@@ -47,7 +48,7 @@ after_build:
 artifacts:
   - path: ygopro-images
     name: ygopro-images-zh-CN
-  - path: records.json
+  - path: records-zh-CN.json
     name: records-zh-CN
 deploy:
   release: latest
