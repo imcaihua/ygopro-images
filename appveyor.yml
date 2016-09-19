@@ -31,7 +31,7 @@ install:
 
   # install fonts
   - ps: '$fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)'
-  - ps: 'dir magicseteditor/fonts/*.ttf | %{ If (!(Test-Path "C:\Windows\Fonts\$($_.name)")) { $fonts.CopyHere($_.fullname)} }'
+  - ps: 'dir magicseteditor/fonts/*.ttf | %{ $fonts.CopyHere($_.fullname) }'
 
   # data
   - mkdir ygopro-database
