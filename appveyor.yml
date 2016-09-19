@@ -37,16 +37,18 @@ install:
   # data
   - mkdir ygopro-database
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
-  - bash -c "curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json || echo {} > records.json"
+  - mkdir ygopro-images
+  - mkdir ygopro-images\thumbnail
+  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip | tar -C ygopro-images -xf - || true; else echo {} > records.json; fi"
+  - rm -rf ygopro-images\field
 
 after_build:
   - ruby --external-encoding=utf-8 generate.rb %locale%
-  - move records.json records-%locale%.json
   - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
-  - mkdir ygopro-images
-  - mkdir ygopro-images\thumbnail
-  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
+  #- bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
+  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
+  - move records.json records-%locale%.json
 artifacts:
   - path: ygopro-images
     name: ygopro-images-zh-CN
