@@ -28,22 +28,27 @@ install:
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
   - mv ygopro-images-generator/* ./
   - bundle install
-  - robocopy magicseteditor\fonts %SystemRoot%\Fonts || true # install fonts, ignore exit code http://ss64.com/nt/robocopy-exit.html
+
+  # install fonts
+  - ps: '$fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)'
+  - ps: 'dir magicseteditor/fonts/*.ttf | %{ If (!(Test-Path "C:\Windows\Fonts\$($_.name)")) { $fonts.CopyHere($_.fullname)} }'
 
   # data
   - mkdir ygopro-database
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
-  - mkdir ygopro-images
-  - echo {} > records.json
+  - curl -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-%locale%.json || echo {} > records.json
 
 after_build:
   - ruby --external-encoding=utf-8 generate.rb %locale%
   - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
+  - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
   - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
 artifacts:
   - path: ygopro-images
     name: ygopro-images-zh-CN
+  - path: records.json
+    name: records-zh-CN
 deploy:
   release: latest
   description: 'Automatic build'
