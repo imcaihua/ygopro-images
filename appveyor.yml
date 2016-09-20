@@ -23,7 +23,7 @@ install:
   # environment and system dependency
   - choco install imagemagick.tool
   - refreshenv
-  - set PATH=C:\Ruby22\bin;%PATH%
+  - set PATH=C:\Ruby22\bin;C:\msys64\usr\bin;%PATH%
 
   # generator
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
@@ -39,7 +39,7 @@ install:
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
   - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
-  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip | tar -C ygopro-images -xf - || true; else echo {} > records.json; fi"
+  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.tar.xz | tar -C ygopro-images --exclude field -Jxf - || true; else echo {} > records.json; fi"
   - rm -rf ygopro-images\field
 
 after_build:
@@ -49,11 +49,13 @@ after_build:
   - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
   - move records.json records-%locale%.json
+  - cd ygopro-images
+  - bash -c "XZ_OPT=-9e tar -Jcf ../ygopro-images-$locale.tar.xz *"
 artifacts:
-  - path: ygopro-images
-    name: ygopro-images-zh-CN
-  - path: records-zh-CN.json
-    name: records-zh-CN
+  - path: ygopro-images-$(locale).tar.xz
+    name: ygopro-images-$(locale)
+  - path: records-$(locale).json
+    name: records-$(locale)
 deploy:
   release: latest
   description: 'Automatic buid commit $(APPVEYOR_REPO_COMMIT) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
