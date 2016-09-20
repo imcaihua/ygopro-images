@@ -50,7 +50,7 @@ after_build:
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
   - move records.json records-%locale%.json
   - cd ygopro-images
-  - bash -c "XZ_OPT=-9e tar -Jcf ../ygopro-images-$locale.tar.xz *"
+  - bash -c "XZ_OPT=-8e tar -Jcf ../ygopro-images-$locale.tar.xz *"
 artifacts:
   - path: ygopro-images-$(locale).tar.xz
     name: ygopro-images-$(locale)
