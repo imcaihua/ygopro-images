@@ -12,9 +12,7 @@ cache:
 clone_depth: 1
 
 init:
-  - env
-  - set
-#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
   # ssh key and submodules
   - ps: $fileContent = "-----BEGIN EC PRIVATE KEY-----`n"
@@ -58,7 +56,7 @@ artifacts:
     name: records-zh-CN
 deploy:
   release: latest
-  description: 'Automatic buid by Appveyor'
+  description: 'Automatic buid commit $(APPVEYOR_REPO_COMMIT) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
   provider: GitHub
   auth_token:
     secure: itZ9Z1dxEpfPJLdTs/PiY98pVZ3GCLNWfid7eAu7SL88Jl9AIrf/3rviKFEbsnoY # your encrypted token from GitHub
