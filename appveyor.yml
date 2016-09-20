@@ -12,6 +12,8 @@ cache:
 clone_depth: 1
 
 init:
+  - cd \
+  - dir /s /q xz.exe
   - set PATH=C:\Ruby22\bin;%MINGW_HOME%\bin;%PATH%
   - xz
 #  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
