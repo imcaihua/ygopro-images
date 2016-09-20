@@ -14,7 +14,7 @@ clone_depth: 1
 init:
   - cd \
   - dir /s /q xz.exe
-  - set PATH=C:\Ruby22\bin;%MINGW_HOME%\bin;%PATH%
+  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin
   - xz
 #  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
