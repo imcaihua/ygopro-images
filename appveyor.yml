@@ -11,9 +11,7 @@ cache:
   - C:\ProgramData\chocolatey\lib
 clone_depth: 1
 
-init:
-  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin
-  - xz
+#init:
 #  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
   # ssh key and submodules
@@ -25,7 +23,7 @@ install:
   # environment and system dependency
   - choco install imagemagick.tool
   - refreshenv
-  - set PATH=C:\Ruby22\bin;%MINGW_HOME%\bin;%PATH%
+  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin
 
   # generator
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
