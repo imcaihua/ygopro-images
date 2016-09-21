@@ -14,7 +14,7 @@ clone_depth: 1
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - curl -o parallel http://git.savannah.gnu.org/cgit/parallel.git/plain/src/parallel
-  - parallel -v
+  - .\parallel -v
 install:
   # ssh key and submodules
   - ps: $fileContent = "-----BEGIN EC PRIVATE KEY-----`n"
