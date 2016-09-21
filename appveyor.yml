@@ -21,15 +21,13 @@ install:
   - ps: Set-Content c:\users\appveyor\.ssh\id_ecdsa $fileContent
 
   # environment and system dependency
-  - set PATH=C:\cygwin64\bin;%PATH%
+  - choco install imagemagick.tool
+  - refreshenv
+  - set PATH=C:\Ruby22\bin;C:\cygwin64\bin;%PATH%;C:\cygwin64\usr\local\bin
   - mkdir parallel
   - cd parallel
   - curl -L ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 | tar --strip-components=1 -jxf -
   - bash -c "./configure; make; make install"
-  
-  - choco install imagemagick.tool
-  - refreshenv
-  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin;C:\cygwin64\usr\local\bin
 
   # generator
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
