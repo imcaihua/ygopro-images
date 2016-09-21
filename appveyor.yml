@@ -33,6 +33,7 @@ install:
   - cd parallel
   - curl -L ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 | tar --strip-components=1 -jxf -
   - bash -c "./configure; make; make install"
+  - cd ..
 
   # install fonts
   - ps: '$fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)'
