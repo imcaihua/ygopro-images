@@ -44,11 +44,16 @@ install:
   - rm -rf ygopro-images\field
 
 after_build:
+  # 跑 generator 脚本，生成 mse 存档
   - ruby --external-encoding=utf-8 generate.rb %locale%
+  # 创建 mse 目录，虽然 mse 可以自动生成，但是并发执行 mse 会出错，因此这里手动创建
+  - mkdir ygopro-images-mse
   - mkdir "%APPDATA%\Magic Set Editor"
+  # 执行 mse，生成超大尺寸卡图
   - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
-  #- bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
+  # 用 imagemagick 把卡图缩小到 ygopro 尺寸
   - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
+  # 场地背景
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
   - move records.json records-%locale%.json
   - cd ygopro-images
