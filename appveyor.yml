@@ -13,6 +13,8 @@ clone_depth: 1
 
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - curl -o parallel http://git.savannah.gnu.org/cgit/parallel.git/plain/src/parallel
+  - ./parallel -v
 install:
   # ssh key and submodules
   - ps: $fileContent = "-----BEGIN EC PRIVATE KEY-----`n"
@@ -20,20 +22,15 @@ install:
   - ps: $fileContent += "`n-----END EC PRIVATE KEY-----`n"
   - ps: Set-Content c:\users\appveyor\.ssh\id_ecdsa $fileContent
 
+  # environment and system dependency
+  - choco install imagemagick.tool
+  - refreshenv
+  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin
+
   # generator
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
   - mv ygopro-images-generator/* ./
   - bundle install
-  
-  # environment and system dependency
-  - choco install imagemagick.tool
-  - refreshenv
-  - set PATH=C:\Ruby22\bin;C:\cygwin64\bin;%PATH%;C:\cygwin64\usr\local\bin
-  - mkdir parallel
-  - cd parallel
-  - curl -L ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 | tar --strip-components=1 -jxf -
-  - bash -c "./configure; make; make install"
-  - cd ..
 
   # install fonts
   - ps: '$fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)'
@@ -48,9 +45,10 @@ install:
   - rm -rf ygopro-images\field
 
 after_build:
-  - ruby --external-encoding=utf-8 generate.rb %locale% | bash -c 'parallel magicseteditor/mse.com --export "mse-sets/{}" "ygopro-images-mse/{card.gamecode}.png"'
+  - ruby --external-encoding=utf-8 generate.rb %locale%
+  - bash -c 'ls -1 mse-sets/data*-$locale.mse-set | xargs -I {} -P 4 magicseteditor/mse.com --export {} "ygopro-images-mse/{card.gamecode}.png"'
   #- bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" -colorspace RGB \( +clone -resize 177x254! -colorspace sRGB -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! -colorspace sRGB "ygopro-images/thumbnail/{}.jpg"'
-  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | parallel magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
+  - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
   - move records.json records-%locale%.json
   - cd ygopro-images
@@ -71,5 +69,5 @@ deploy:
   on:
     branch: master                 # release from master branch only
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
