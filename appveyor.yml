@@ -55,11 +55,13 @@ after_build:
   - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
   # 场地背景
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
+  # 将 records.json 改名文带语言的文件名
+  - move records.json records-%locale%.json
 artifacts:
   - path: ygopro-images
     name: ygopro-images-$(locale)
     type: zip
-  - path: records.json
+  - path: records-$(locale).json
     name: records-$(locale)
 deploy:
   release: latest
