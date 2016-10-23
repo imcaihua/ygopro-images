@@ -24,7 +24,8 @@ install:
   # environment and system dependency
   - choco install imagemagick.tool
   - refreshenv
-  - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0\bin
+  # C:\msys64\usr\bin for bsdtar.exe to extract zip package
+  - set PATH=C:\Ruby22\bin;%PATH%;C:\msys64\usr\bin
 
   # generator
   - git clone --depth 1 --recursive git@github.com:mycard/ygopro-images-generator.git
