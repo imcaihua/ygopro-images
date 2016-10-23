@@ -40,7 +40,7 @@ install:
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/cards.%locale%.cdb
   - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
-  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.tar.xz | tar -C ygopro-images --exclude field -Jxf -; else echo {} > records.json; fi"
+  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip | bsdtar -C ygopro-images --exclude field -xf -; else echo {} > records.json; fi"
   - rm -rf ygopro-images\field
 
 after_build:
