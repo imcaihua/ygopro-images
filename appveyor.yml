@@ -11,8 +11,8 @@ cache:
   - C:\ProgramData\chocolatey\lib
 shallow_clone: true
 
-#init:
-#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
   # ssh key and submodules
@@ -55,13 +55,11 @@ after_build:
   - bash -c 'ls -1 ygopro-images-mse | sed -e "s/\.png$//" | xargs -I {} -P 4 magick "ygopro-images-mse/{}.png" \( +clone -resize 177x254! -write "ygopro-images/{}.jpg" +delete \) -resize 44x64! "ygopro-images/thumbnail/{}.jpg"'
   # 场地背景
   - curl -L https://github.com/mycard/ygopro-images-field/archive/master.tar.gz | tar --strip-components=1 -C ygopro-images -zxf - ygopro-images-field-master/field
-  - move records.json records-%locale%.json
-  - cd ygopro-images
-  - bash -c "XZ_OPT=-6e tar -Jcf ../ygopro-images-$locale.tar.xz *"
 artifacts:
-  - path: ygopro-images-$(locale).tar.xz
+  - path: ygopro-images
     name: ygopro-images-$(locale)
-  - path: records-$(locale).json
+    type: zip
+  - path: records.json
     name: records-$(locale)
 deploy:
   release: latest
