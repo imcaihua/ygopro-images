@@ -41,7 +41,7 @@ install:
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/mycard/ygopro-database/raw/master/locales/%locale%/cards.cdb
   - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
-  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L -o last.zip https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip; unzip -d ygopro-images last.zip -x field/*; else echo {} > records.json; fi"
+  - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L -o last.zip https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip; unzip -q -d ygopro-images last.zip -x field/*; else echo {} > records.json; fi"
   - rm -rf ygopro-images\field
 
 after_build:
