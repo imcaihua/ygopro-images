@@ -34,7 +34,8 @@ install:
   # generator
   - git clone git@github.com:mycard/ygopro-images-generator.git
   - cd ygopro-images-generator
-  - git submodule update --init --remote
+  - ls
+  - git submodule update --init
   - cd ..
   - mv ygopro-images-generator/* ./
   - bundle install
