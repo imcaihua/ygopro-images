@@ -32,7 +32,10 @@ install:
   - set PATH=C:\Ruby22\bin;%PATH%;C:\MinGW\msys\1.0
 
   # generator
-  - git clone --recursive git@github.com:mycard/ygopro-images-generator.git
+  - git clone git@github.com:mycard/ygopro-images-generator.git
+  - cd ygopro-images-generator
+  - git submodule update --init --remote
+  - cd ..
   - mv ygopro-images-generator/* ./
   - bundle install
 
