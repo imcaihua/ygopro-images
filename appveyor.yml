@@ -52,6 +52,7 @@ install:
   - bash -c "if curl -f -L -o records.json https://github.com/mycard/ygopro-images/releases/download/latest/records-$locale.json; then curl -f -L -o last.zip https://github.com/mycard/ygopro-images/releases/download/latest/ygopro-images-$locale.zip; unzip -q -d ygopro-images last.zip -x field/*; else echo {} > records.json; fi"
   - rm -rf ygopro-images\field
 
+build: off
 after_build:
   # 跑 generator 脚本，生成 mse 存档
   - ruby --external-encoding=utf-8 generate.rb %locale%
