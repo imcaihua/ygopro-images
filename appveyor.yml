@@ -46,7 +46,7 @@ install:
   - ps: 'dir magicseteditor/fonts/*.ttf | %{ $fonts.CopyHere($_.fullname) }'
 
   # data
-  - mkdir ygopro-database
+  #- mkdir ygopro-database
   - curl -L -o ygopro-database\%locale%.cdb https://github.com/moecube/ygopro-database/raw/master/locales/%locale%/cards.cdb
   - mkdir ygopro-images
   - mkdir ygopro-images\thumbnail
